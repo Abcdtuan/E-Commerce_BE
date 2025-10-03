@@ -8,4 +8,6 @@ public interface CustomerProduct {
     List<ProductDto> getAllProducts();
 
     List<ProductDto> getAllProductsByName(String name);
+
+    ProductDto getProductById(Long id);
 }

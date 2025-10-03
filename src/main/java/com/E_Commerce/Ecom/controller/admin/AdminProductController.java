@@ -43,4 +43,24 @@ public class AdminProductController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+    @GetMapping("/product/{id}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id)  {
+        ProductDto productDto = adminProduct.getProductById(id);
+        if(productDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }else {
+            return ResponseEntity.status(HttpStatus.OK).body(productDto);
+        }
+    }
+
+    @PutMapping("/product/update/{id}")
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,@ModelAttribute ProductDto productDto)  throws IOException {
+        ProductDto productDto1 = adminProduct.updateProduct(id, productDto);
+        if(productDto1 == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }else{
+            return ResponseEntity.status(HttpStatus.OK).body(productDto1);
+        }
+
+    }
 }

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,5 +25,10 @@ public class CustomerProductIplm implements CustomerProduct {
     public List<ProductDto> getAllProductsByName(String name){
         List<Product> products = productRepository.findAllByNameContaining(name);
         return products.stream().map(Product::getDto).collect(Collectors.toList());
+    }
+
+    public ProductDto getProductById(Long id){
+        Optional<Product> productOptional = productRepository.findById(id);
+        return productOptional.map(Product::getDto).orElse(null);
     }
 }

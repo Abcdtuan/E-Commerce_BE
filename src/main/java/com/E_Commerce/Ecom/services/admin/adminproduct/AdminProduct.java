@@ -14,4 +14,8 @@ public interface AdminProduct {
     List<ProductDto> getAllProductsByName(String name);
 
     boolean deleteProduct(Long id);
+
+    ProductDto getProductById(Long id);
+
+    ProductDto updateProduct(Long id, ProductDto productDto)  throws IOException;
 }

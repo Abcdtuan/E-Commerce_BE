@@ -1,6 +1,7 @@
 package com.E_Commerce.Ecom.entity;
 
 import com.E_Commerce.Ecom.dto.CartItemsDto;
+import com.E_Commerce.Ecom.dto.OrderDto;
 import com.E_Commerce.Ecom.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -43,9 +44,33 @@ public class Order {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "coupon_id", referencedColumnName = "id")
+    private Coupon coupon;
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     private List<CartItems> cartItems;
+
+    public OrderDto getOrderDto(){
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(id);
+        orderDto.setOrderDescription(orderDescription);
+        orderDto.setOrderStatus(orderStatus);
+        orderDto.setDate(date);
+        orderDto.setAddress(address);
+        orderDto.setPhone(phone);
+        orderDto.setAmount(amount);
+        orderDto.setDiscount(discount);
+        orderDto.setTrackingId(trackingId);
+        orderDto.setUserName(user.getName());
+        if(coupon != null){
+            orderDto.setCouponName(coupon.getName());
+        }
+
+        return orderDto;
+
+    }
 
 
 
