@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Data
 @AllArgsConstructor
+
 public class CouponDto {
 
     private Long id;

@@ -10,4 +10,8 @@ public interface CouponService {
     Coupon createCoupon(CouponDto couponDto);
 
     List<Coupon> getAllCoupons();
+
+    boolean deleteCoupon(Long id);
+
+    CouponDto updateCoupon(Long id, CouponDto couponDto);
 }

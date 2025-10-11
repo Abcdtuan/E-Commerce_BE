@@ -3,11 +3,13 @@ package com.E_Commerce.Ecom.services.admin.adminproduct;
 import com.E_Commerce.Ecom.dto.ProductDto;
 import com.E_Commerce.Ecom.entity.Category;
 import com.E_Commerce.Ecom.entity.Product;
+import com.E_Commerce.Ecom.entity.ProductImages;
 import com.E_Commerce.Ecom.repository.CategoryRepository;
 import com.E_Commerce.Ecom.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,16 +29,22 @@ public class AdminProductIplm implements AdminProduct {
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
-        product.setImg(productDto.getImg().getBytes());
-
-
         Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow();
 
         product.setCategory(category);
+        addImagesToProduct(product, productDto.getImages());
+        Product savedProduct = productRepository.save(product);
+        if (!savedProduct.getImages().isEmpty() && savedProduct.getImages().get(0).getId() != null) {
+            Long thumbnailId = savedProduct.getImages().get(0).getId();
+            savedProduct.setThumbnailImageId(thumbnailId);
+            savedProduct = productRepository.save(savedProduct);
+        }
 
-        return productRepository.save(product).getDto();
 
+        return savedProduct.getDto();
     }
+
+
 
     public List<ProductDto> getAllProducts(){
         List<Product> products = productRepository.findAll();
@@ -74,13 +82,34 @@ public class AdminProductIplm implements AdminProduct {
             product.setDescription(productDto.getDescription());
             product.setPrice(productDto.getPrice());
             product.setCategory(optionalCategory.get());
-            if(productDto.getImg() != null){
-                product.setImg(productDto.getImg().getBytes());
+            addImagesToProduct(product, productDto.getImages());
+
+            Product savedProduct = productRepository.save(product);
+            if (!savedProduct.getImages().isEmpty() && savedProduct.getImages().get(0).getId() != null) {
+                Long thumbnailId = savedProduct.getImages().get(0).getId();
+                savedProduct.setThumbnailImageId(thumbnailId);
+                savedProduct = productRepository.save(savedProduct);
             }
-            return productRepository.save(product).getDto();
-            
+
+
+
+            return savedProduct.getDto();
+
         }
         return null;
     }
+    private void addImagesToProduct(Product product, List<MultipartFile> files) throws IOException {
+        if (files != null && !files.isEmpty()) {
+            product.getImages().clear();
+            for (MultipartFile file : files) {
+                ProductImages productImages = new ProductImages();
+                productImages.setImg(file.getBytes());
+                productImages.setProduct(product);
+                product.getImages().add(productImages);
+            }
+            product.setThumbnailImageId(product.getImages().get(0).getId());
+        }
+    }
+
 
 }

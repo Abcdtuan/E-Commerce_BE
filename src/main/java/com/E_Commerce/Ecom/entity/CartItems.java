@@ -42,7 +42,7 @@ public class CartItems {
         cartItemsDto.setQuantity(quantity);
         cartItemsDto.setProductId(product.getId());
         cartItemsDto.setProductName(product.getName());
-        cartItemsDto.setReturnedImg(product.getImg());
+        cartItemsDto.setReturnedImg(product.getDto().getThumbnail());
         cartItemsDto.setUserId(user.getId());
 
         return cartItemsDto;

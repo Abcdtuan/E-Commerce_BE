@@ -17,16 +17,31 @@ public class AdminCouponController {
 
     private final CouponService couponService;
 
-    @PostMapping("coupon")
+    @PostMapping("/coupon")
     public ResponseEntity<Coupon> createCoupon(@RequestBody CouponDto couponDto) {
         System.out.println("Ngày hết hạn nhận vào: " + couponDto.getExpirationDate());
         Coupon coupon = couponService.createCoupon(couponDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(coupon);
     }
-    @GetMapping("coupons")
+    @GetMapping("/coupons")
     public ResponseEntity<List<Coupon>> getAllCoupons() {
         List<Coupon> coupons = couponService.getAllCoupons();
         return ResponseEntity.status(HttpStatus.OK).body(coupons);
+    }
+
+    @DeleteMapping("/coupon/delete/{id}")
+    public ResponseEntity<Void> deleteCoupon(@PathVariable Long id) {
+        boolean deleteCoupon = couponService.deleteCoupon(id);
+        if (deleteCoupon) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PutMapping("/coupon/update/{id}")
+    public ResponseEntity<CouponDto> updateCoupon(@PathVariable Long id, @RequestBody CouponDto couponDto) {
+        CouponDto updatedCoupon = couponService.updateCoupon(id, couponDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCoupon);
     }
 
 }

@@ -8,6 +8,10 @@ import lombok.Lombok;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Entity
 @Table(name = "product")
 @Data
@@ -24,9 +28,9 @@ public class Product {
     @Lob
     private String description;
 
-    @Lob
-    @Column(columnDefinition = "longblob")
-    private byte[] img;
+//    @Lob
+//    @Column(columnDefinition = "longblob")
+//    private byte[] img;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "Category_id", nullable = false)
@@ -34,13 +38,28 @@ public class Product {
     @JsonIgnore
     private Category category;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProductImages> images = new ArrayList<>();
+
+    @Lob
+    @Column(columnDefinition = "Longblob")
+    private Long thumbnailImageId;
+
     public ProductDto getDto() {
         ProductDto productDto = new ProductDto();
         productDto.setId(id);
         productDto.setName(name);
         productDto.setPrice(price);
         productDto.setDescription(description);
-        productDto.setByteImg(img);
+        List<byte[]> allImages = images.stream()
+                        .map(ProductImages::getImg)
+                        .toList();
+        productDto.setByteImages(allImages);
+
+        productDto.setThumbnail(allImages.get(0));
+
+
         productDto.setCategoryId(category.getId());
         productDto.setCategoryName(category.getName());
         return productDto;

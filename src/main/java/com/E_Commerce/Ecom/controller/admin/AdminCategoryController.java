@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -29,5 +30,19 @@ public class AdminCategoryController {
     public ResponseEntity<List<Category>> getAllCategories(){
         List<Category> categories = categoryService.getAllCategories();
         return ResponseEntity.status(HttpStatus.CREATED).body(categories);
+    }
+
+    @PutMapping("/category/update/{id}")
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id,@RequestBody CategoryDto categoryDto){
+        CategoryDto updateDto = categoryService.updateCategory(id, categoryDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updateDto);
+    }
+    @DeleteMapping("/category/delete/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id){
+        boolean categoryDeleted = categoryService.deleteCategory(id);
+        if(categoryDeleted){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

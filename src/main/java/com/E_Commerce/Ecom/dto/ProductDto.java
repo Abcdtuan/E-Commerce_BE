@@ -5,6 +5,8 @@ import jakarta.persistence.Lob;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Data
 public class ProductDto {
     private Long id;
@@ -13,12 +15,13 @@ public class ProductDto {
 
     private Long price;
 
-
     private String description;
 
-    private MultipartFile img;
+    private List<MultipartFile> images;
 
-    private byte[] byteImg;
+    private List<byte[]> byteImages;
+
+    private byte[] thumbnail;
 
     private Long categoryId;
 
