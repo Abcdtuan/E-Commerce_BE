@@ -28,9 +28,6 @@ public class Product {
     @Lob
     private String description;
 
-//    @Lob
-//    @Column(columnDefinition = "longblob")
-//    private byte[] img;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "Category_id", nullable = false)

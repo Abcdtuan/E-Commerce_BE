@@ -3,6 +3,7 @@ package com.E_Commerce.Ecom.controller.customer;
 import com.E_Commerce.Ecom.dto.AddProductInCartDto;
 import com.E_Commerce.Ecom.dto.CouponDto;
 import com.E_Commerce.Ecom.dto.OrderDto;
+import com.E_Commerce.Ecom.dto.PlaceOrderDto;
 import com.E_Commerce.Ecom.entity.Order;
 import com.E_Commerce.Ecom.services.customer.cart.CartService;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,12 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PostMapping("/cart/placeOrder")
+    public ResponseEntity<OrderDto> placeOrder(@RequestBody PlaceOrderDto placeOrderDto){
+        OrderDto orderDto = cartService.placeOrder(placeOrderDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderDto);
     }
 
 

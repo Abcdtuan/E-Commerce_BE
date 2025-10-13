@@ -3,6 +3,7 @@ package com.E_Commerce.Ecom.services.customer.cart;
 import com.E_Commerce.Ecom.dto.AddProductInCartDto;
 import com.E_Commerce.Ecom.dto.CouponDto;
 import com.E_Commerce.Ecom.dto.OrderDto;
+import com.E_Commerce.Ecom.dto.PlaceOrderDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface CartService {
     OrderDto decreaseQuantity(AddProductInCartDto addProductInCartDto);
 
     boolean deleteCartItem(Long id);
+
+    OrderDto placeOrder( PlaceOrderDto placeOrderDto);
 }

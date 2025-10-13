@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class PlaceOrderDto {
 
+    Long userId;
+
     String address;
 
     String phoneNumber;

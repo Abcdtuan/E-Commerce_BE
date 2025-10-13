@@ -30,6 +30,8 @@ public class Order {
 
     private String paymentMethod;
 
+    private String name;
+
     private String phone;
 
     private Long amount;
@@ -46,6 +48,7 @@ public class Order {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "coupon_id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Coupon coupon;
 
 

@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -190,6 +187,7 @@ public class CartServiceIplm implements CartService {
         }
     }
 
+    @Override
     public boolean deleteCartItem(Long id){
         Optional<CartItems> cartItems = cartItemRepository.findById(id);
         if(cartItems.isPresent()){
@@ -210,22 +208,33 @@ public class CartServiceIplm implements CartService {
         return false;
     }
 
-    public OrderDto placeOrder(Long userId, PlaceOrderDto placeOrderDto){
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
-        if(activeOrder == null){
-            throw  new RuntimeException("Không có ");
+    @Override
+    public OrderDto placeOrder( PlaceOrderDto placeOrderDto){
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(placeOrderDto.getUserId(), OrderStatus.PENDING);
+        Optional<User> optionalUser = userRepository.findById(placeOrderDto.getUserId());
+        if(optionalUser.isPresent()){
+            activeOrder.setAddress(placeOrderDto.getAddress());
+            activeOrder.setOrderDescription(placeOrderDto.getDescription());
+            activeOrder.setPhone(placeOrderDto.getPhoneNumber());
+            activeOrder.setName(placeOrderDto.getName());
+            activeOrder.setDate(new Date());
+            activeOrder.setTrackingId(UUID.randomUUID());
+            activeOrder.setOrderStatus(OrderStatus.PLACED);
+
+            orderRepository.save(activeOrder);
+
+            Order order = new Order();
+            order.setAmount(0L);
+            order.setTotalAmount(0L);
+            order.setDiscount(0L);
+            order.setUser(optionalUser.get());
+            order.setOrderStatus(OrderStatus.PENDING);
+            orderRepository.save(order);
+
+            return activeOrder.getOrderDto();
+
+
         }
-        activeOrder.setAddress(placeOrderDto.getAddress());
-        activeOrder.setPhone(placeOrderDto.getPhoneNumber());
-        activeOrder.setOrderDescription(placeOrderDto.getDescription());
-
-        orderRepository.save(activeOrder);
-
-        return activeOrder.getOrderDto();
-
+        return null;
     }
-
-
-
-
 }
