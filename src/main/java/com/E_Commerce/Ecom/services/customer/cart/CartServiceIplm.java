@@ -214,7 +214,7 @@ public class CartServiceIplm implements CartService {
         Optional<User> optionalUser = userRepository.findById(placeOrderDto.getUserId());
         if(optionalUser.isPresent()){
             activeOrder.setAddress(placeOrderDto.getAddress());
-            activeOrder.setOrderDescription(placeOrderDto.getDescription());
+            activeOrder.setOrderDescription(placeOrderDto.getOrderDescription());
             activeOrder.setPhone(placeOrderDto.getPhoneNumber());
             activeOrder.setName(placeOrderDto.getName());
             activeOrder.setDate(new Date());

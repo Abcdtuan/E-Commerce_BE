@@ -13,5 +13,5 @@ public class PlaceOrderDto {
 
     String name;
 
-    String description;
+    String orderDescription;
 }

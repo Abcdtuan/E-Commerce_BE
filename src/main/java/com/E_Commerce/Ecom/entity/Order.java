@@ -22,6 +22,8 @@ public class Order {
 
     private String orderDescription;
 
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     private Date date;
