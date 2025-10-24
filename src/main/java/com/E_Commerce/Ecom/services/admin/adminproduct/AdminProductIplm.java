@@ -7,6 +7,9 @@ import com.E_Commerce.Ecom.entity.ProductImages;
 import com.E_Commerce.Ecom.repository.CategoryRepository;
 import com.E_Commerce.Ecom.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,9 +49,10 @@ public class AdminProductIplm implements AdminProduct {
 
 
 
-    public List<ProductDto> getAllProducts(){
-        List<Product> products = productRepository.findAll();
-        return products.stream().map(Product::getDto).collect(Collectors.toList());
+    public Page<ProductDto> getAllProducts(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products = productRepository.findAll(pageable);
+        return products.map(Product::getDto);
     }
 
     public List<ProductDto> getAllProductsByName(String name){

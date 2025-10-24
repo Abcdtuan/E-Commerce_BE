@@ -29,7 +29,7 @@ public class AdminCategoryController {
     @GetMapping("/categorys")
     public ResponseEntity<List<Category>> getAllCategories(){
         List<Category> categories = categoryService.getAllCategories();
-        return ResponseEntity.status(HttpStatus.CREATED).body(categories);
+        return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
     @PutMapping("/category/update/{id}")

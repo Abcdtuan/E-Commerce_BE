@@ -4,12 +4,10 @@ import com.E_Commerce.Ecom.dto.ProductDto;
 import com.E_Commerce.Ecom.entity.Product;
 import com.E_Commerce.Ecom.services.customer.customerproduct.CustomerProduct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +20,10 @@ public class CustomerProductController {
     private final CustomerProduct customerProduct;
 
     @GetMapping()
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        List<ProductDto> productDtos = customerProduct.getAllProducts();
+    public ResponseEntity<Page<ProductDto>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        Page<ProductDto> productDtos = customerProduct.getAllProducts(page, size);
         return  ResponseEntity.status(HttpStatus.CREATED).body(productDtos);
     }
 

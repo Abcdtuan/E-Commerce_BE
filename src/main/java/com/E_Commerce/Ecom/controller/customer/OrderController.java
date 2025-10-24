@@ -22,4 +22,5 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable Long userId) {
         return ResponseEntity.ok(orderService.getAllOrders(userId));
     }
+
 }
