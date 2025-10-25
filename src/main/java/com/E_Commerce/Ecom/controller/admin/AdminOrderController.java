@@ -1,5 +1,6 @@
 package com.E_Commerce.Ecom.controller.admin;
 
+import com.E_Commerce.Ecom.dto.AnalyticResponse;
 import com.E_Commerce.Ecom.dto.OrderDto;
 import com.E_Commerce.Ecom.entity.Order;
 import com.E_Commerce.Ecom.services.admin.order.OrderService;
@@ -20,6 +21,7 @@ public class AdminOrderController {
     public ResponseEntity<List<OrderDto>> getOrderList(){
         return ResponseEntity.ok(orderService.getAllOrders());
     }
+
     @PutMapping("/changeOrderStatus/{id}/{status}")
     public ResponseEntity<OrderDto> changeOrderStatus(@PathVariable Long id, @PathVariable String status) {
         OrderDto orderDto = orderService.changeOrderStatus(id, status);
@@ -27,5 +29,10 @@ public class AdminOrderController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(orderDto);
+    }
+
+    @GetMapping("/analytics")
+    public ResponseEntity<AnalyticResponse> getAnalytics(){
+        return ResponseEntity.ok(orderService.calculateAnalytic());
     }
 }

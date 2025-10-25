@@ -1,5 +1,6 @@
 package com.E_Commerce.Ecom.services.admin.order;
 
+import com.E_Commerce.Ecom.dto.AnalyticResponse;
 import com.E_Commerce.Ecom.dto.OrderDto;
 import org.springframework.stereotype.Service;
 
@@ -11,4 +12,6 @@ public interface OrderService {
     List<OrderDto> getAllOrders();
 
     OrderDto changeOrderStatus(Long id, String status);
+
+    AnalyticResponse calculateAnalytic();
 }

@@ -11,4 +11,6 @@ public interface CustomerProduct {
     List<ProductDto> getAllProductsByName(String name);
 
     ProductDto getProductById(Long id);
+
+    List<ProductDto> getProductsByCategoryId(Long categoryId);
 }

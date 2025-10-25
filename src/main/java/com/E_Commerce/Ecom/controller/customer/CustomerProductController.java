@@ -24,21 +24,27 @@ public class CustomerProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
         Page<ProductDto> productDtos = customerProduct.getAllProducts(page, size);
-        return  ResponseEntity.status(HttpStatus.CREATED).body(productDtos);
+        return  ResponseEntity.status(HttpStatus.OK).body(productDtos);
     }
 
     @GetMapping("/search/{name}")
     public ResponseEntity<List<ProductDto>> getAllProductsByName(@PathVariable String name) {
         List<ProductDto> productDtos = customerProduct.getAllProductsByName(name);
-        return  ResponseEntity.status(HttpStatus.CREATED).body(productDtos);
+        return  ResponseEntity.status(HttpStatus.OK).body(productDtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
         ProductDto productOptional = customerProduct.getProductById(id);
         if(productOptional!=null){
-            return ResponseEntity.status(HttpStatus.CREATED).body(productOptional);
+            return ResponseEntity.status(HttpStatus.OK).body(productOptional);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductDto>> getAllProductsByCategoryId(@PathVariable Long categoryId) {
+        List<ProductDto> productDtos = customerProduct.getProductsByCategoryId(categoryId);
+        return  ResponseEntity.status(HttpStatus.OK).body(productDtos);
     }
 }
