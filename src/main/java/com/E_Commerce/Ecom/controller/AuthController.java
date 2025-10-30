@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,6 +53,15 @@ public class AuthController {
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.username);
         Optional<User> optionalUser = userRepository.findFirstByEmail(userDetails.getUsername());
+        if (optionalUser.isPresent() && !optionalUser.get().isActive()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+            response.getWriter().write(
+                    new JSONObject()
+                            .put("error", "Tài khoản của bạn đã bị khóa")
+                            .toString()
+            );
+            return;
+        }
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
         if(optionalUser.isPresent()){
             response.getWriter().write(new JSONObject()
@@ -76,4 +86,7 @@ public class AuthController {
         UserDto userDto = authService.createUser(signupRequest);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
+
+
+
 }
