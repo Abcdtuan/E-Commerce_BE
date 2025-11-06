@@ -2,6 +2,8 @@ package com.E_Commerce.Ecom.services.admin.order;
 
 import com.E_Commerce.Ecom.dto.AnalyticResponse;
 import com.E_Commerce.Ecom.dto.OrderDto;
+import com.E_Commerce.Ecom.dto.ProductStatisticDto;
+import com.E_Commerce.Ecom.entity.CartItems;
 import com.E_Commerce.Ecom.entity.Order;
 import com.E_Commerce.Ecom.enums.OrderStatus;
 import com.E_Commerce.Ecom.repository.OrderRepository;
@@ -44,68 +46,90 @@ public class OrderServiceIplm implements OrderService {
 
     public AnalyticResponse calculateAnalytic() {
 
-        LocalDate currentDate = LocalDate.now();
-        LocalDate previousMonthDate = currentDate.minusMonths(1);
+        Calendar current = Calendar.getInstance();
+        Calendar previous = (Calendar) current.clone();
+        previous.add(Calendar.MONTH, -1);
 
-        Long currentMonthOrders = getTotalOrdersForMonth(currentDate.getMonthValue(), currentDate.getYear());
-        Long previousMonthOrders = getTotalOrdersForMonth(previousMonthDate.getMonthValue(), previousMonthDate.getYear());
 
-        Long currentMonthEarnings = getTotalEarningsForMonth(currentDate.getMonthValue(), currentDate.getYear());
-        Long previousMonthEarnings = getTotalEarningsForMonth(previousMonthDate.getMonthValue(), previousMonthDate.getYear());
+        Long currentMonthOrders = getTotalOrdersForMonth(current.get(Calendar.MONTH) + 1, current.get(Calendar.YEAR));
+        Long previousMonthOrders = getTotalOrdersForMonth(previous.get(Calendar.MONTH) + 1, previous.get(Calendar.YEAR));
+
+
+        Long currentMonthEarnings = getTotalEarningsForMonth(current.get(Calendar.MONTH) + 1, current.get(Calendar.YEAR));
+        Long previousMonthEarnings = getTotalEarningsForMonth(previous.get(Calendar.MONTH) + 1, previous.get(Calendar.YEAR));
+
 
         Long placed = orderRepository.countByOrderStatus(OrderStatus.PLACED);
         Long shipped = orderRepository.countByOrderStatus(OrderStatus.SHIPPED);
         Long delivered = orderRepository.countByOrderStatus(OrderStatus.DELIVERED);
 
-        return new AnalyticResponse(placed, shipped, delivered, currentMonthOrders, previousMonthOrders, currentMonthEarnings, previousMonthEarnings);
+
+        List<ProductStatisticDto> currentMonthProducts = getProductStatisticsForMonth(current.get(Calendar.MONTH) + 1, current.get(Calendar.YEAR));
+        List<ProductStatisticDto> previousMonthProducts = getProductStatisticsForMonth(previous.get(Calendar.MONTH) + 1, previous.get(Calendar.YEAR));
+
+        return new AnalyticResponse(
+                placed, shipped, delivered,
+                currentMonthOrders, previousMonthOrders,
+                currentMonthEarnings, previousMonthEarnings,
+                currentMonthProducts, previousMonthProducts
+        );
     }
 
     public Long getTotalOrdersForMonth(int month, int year) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month - 1);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-
-        Date startOfMonth = calendar.getTime();
-
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-
-        Date endOfMonth = calendar.getTime();
-
-        List<Order> orders = orderRepository.findByDateBetweenAndOrderStatus(startOfMonth, endOfMonth, OrderStatus.DELIVERED);
-
+        Date[] range = getMonthDateRange(month, year);
+        List<Order> orders = orderRepository.findByDateBetweenAndOrderStatus(range[0], range[1], OrderStatus.DELIVERED);
         return (long) orders.size();
     }
+
+
     public Long getTotalEarningsForMonth(int month, int year) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month - 1);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
+        Date[] range = getMonthDateRange(month, year);
+        List<Order> orders = orderRepository.findByDateBetweenAndOrderStatus(range[0], range[1], OrderStatus.DELIVERED);
 
-        Date startOfMonth = calendar.getTime();
-
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-
-        Date endOfMonth = calendar.getTime();
-
-        List<Order> orders = orderRepository.findByDateBetweenAndOrderStatus(startOfMonth, endOfMonth, OrderStatus.DELIVERED);
-
-        Long sum = 0L;
+        long sum = 0L;
         for (Order order : orders) {
             sum += order.getAmount();
         }
         return sum;
     }
+
+
+    public List<ProductStatisticDto> getProductStatisticsForMonth(int month, int year) {
+        Date[] range = getMonthDateRange(month, year);
+        List<Order> orders = orderRepository.findByDateBetweenAndOrderStatus(range[0], range[1], OrderStatus.DELIVERED);
+
+        Map<Long, ProductStatisticDto> productMap = new HashMap<>();
+
+        for (Order order : orders) {
+            for (CartItems item : order.getCartItems()) {
+                Long productId = item.getProduct().getId();
+                ProductStatisticDto stat = productMap.getOrDefault(productId,
+                        new ProductStatisticDto(
+                                productId,
+                                item.getProduct().getName(),
+                                item.getProduct().getDto().getThumbnail(),
+                                item.getProduct().getPrice(),
+                                0L
+                        ));
+                stat.setQuantitySold(stat.getQuantitySold() + item.getQuantity());
+                productMap.put(productId, stat);
+            }
+        }
+
+        return new ArrayList<>(productMap.values());
+    }
+
+
+    private Date[] getMonthDateRange(int month, int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, 1, 0, 0, 0);
+        Date start = calendar.getTime();
+
+        calendar.set(year, month - 1, calendar.getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        Date end = calendar.getTime();
+
+        return new Date[]{start, end};
+    }
+
 }
+

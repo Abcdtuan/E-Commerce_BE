@@ -3,6 +3,7 @@ package com.E_Commerce.Ecom.services.customer.cart;
 import com.E_Commerce.Ecom.dto.*;
 import com.E_Commerce.Ecom.entity.*;
 import com.E_Commerce.Ecom.enums.OrderStatus;
+import com.E_Commerce.Ecom.enums.PaymentMethod;
 import com.E_Commerce.Ecom.repository.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -219,6 +220,7 @@ public class CartServiceIplm implements CartService {
             activeOrder.setName(placeOrderDto.getName());
             activeOrder.setDate(new Date());
             activeOrder.setTrackingId(UUID.randomUUID());
+            activeOrder.setPaymentMethod(placeOrderDto.getPaymentMethod());
             activeOrder.setOrderStatus(OrderStatus.PLACED);
 
             orderRepository.save(activeOrder);

@@ -2,6 +2,7 @@ package com.E_Commerce.Ecom.controller.admin;
 
 import com.E_Commerce.Ecom.dto.AnalyticResponse;
 import com.E_Commerce.Ecom.dto.OrderDto;
+import com.E_Commerce.Ecom.dto.ProductStatisticDto;
 import com.E_Commerce.Ecom.entity.Order;
 import com.E_Commerce.Ecom.services.admin.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,16 @@ public class AdminOrderController {
     }
 
     @GetMapping("/analytics")
-    public ResponseEntity<AnalyticResponse> getAnalytics(){
+    public ResponseEntity<AnalyticResponse> getAnalyticsSummary(){
         return ResponseEntity.ok(orderService.calculateAnalytic());
+    }
+
+
+    @GetMapping("/analytics/products")
+    public ResponseEntity<List<ProductStatisticDto>> getProductStatistics(
+            @RequestParam int month,
+            @RequestParam int year
+    ){
+        return ResponseEntity.ok(orderService.getProductStatisticsForMonth(month, year));
     }
 }

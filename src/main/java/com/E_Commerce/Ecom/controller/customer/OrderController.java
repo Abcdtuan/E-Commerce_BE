@@ -4,10 +4,7 @@ import com.E_Commerce.Ecom.dto.OrderDto;
 import com.E_Commerce.Ecom.services.customer.orders.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +18,15 @@ public class OrderController {
     @GetMapping("/placedOrders/{userId}")
     public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable Long userId) {
         return ResponseEntity.ok(orderService.getAllOrders(userId));
+    }
+
+    @PutMapping("/changeOrderStatus/{id}/{status}")
+    public ResponseEntity<OrderDto> changeOrderStatus(@PathVariable Long id, @PathVariable String status) {
+        OrderDto orderDto = orderService.changeOrderStatus(id, status);
+        if(orderDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(orderDto);
     }
 
 }

@@ -9,4 +9,5 @@ public interface OrderService {
 
     List<OrderDto> getAllOrders(Long userId);
     OrderDto searchOrderByTrackingId(UUID trackingId);
+    OrderDto changeOrderStatus(Long id, String status);
 }

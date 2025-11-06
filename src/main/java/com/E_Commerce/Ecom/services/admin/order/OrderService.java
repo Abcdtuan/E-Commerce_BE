@@ -2,6 +2,7 @@ package com.E_Commerce.Ecom.services.admin.order;
 
 import com.E_Commerce.Ecom.dto.AnalyticResponse;
 import com.E_Commerce.Ecom.dto.OrderDto;
+import com.E_Commerce.Ecom.dto.ProductStatisticDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface OrderService {
     OrderDto changeOrderStatus(Long id, String status);
 
     AnalyticResponse calculateAnalytic();
+
+    List<ProductStatisticDto> getProductStatisticsForMonth(int month, int year);
 }

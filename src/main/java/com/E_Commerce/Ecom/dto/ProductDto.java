@@ -31,6 +31,10 @@ public class ProductDto {
 
     private Boolean reviewed;
 
+    private Long totalSold;
+
+    private Double averageRating;
+
 
 
 

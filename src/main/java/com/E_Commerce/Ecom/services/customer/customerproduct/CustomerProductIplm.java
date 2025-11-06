@@ -2,10 +2,12 @@ package com.E_Commerce.Ecom.services.customer.customerproduct;
 
 
 import com.E_Commerce.Ecom.dto.ProductDto;
-import com.E_Commerce.Ecom.entity.Category;
-import com.E_Commerce.Ecom.entity.Product;
+import com.E_Commerce.Ecom.entity.*;
+import com.E_Commerce.Ecom.enums.OrderStatus;
 import com.E_Commerce.Ecom.repository.CategoryRepository;
+import com.E_Commerce.Ecom.repository.OrderRepository;
 import com.E_Commerce.Ecom.repository.ProductRepository;
+import com.E_Commerce.Ecom.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,10 @@ import java.util.stream.Collectors;
 public class CustomerProductIplm implements CustomerProduct {
 
     private final ProductRepository productRepository;
+
+    private final OrderRepository orderRepository;
+
+    private final ReviewRepository reviewRepository;
 
     @Override
     public Page<ProductDto> getAllProducts(int page, int size) {
@@ -38,7 +44,33 @@ public class CustomerProductIplm implements CustomerProduct {
     @Override
     public ProductDto getProductById(Long id){
         Optional<Product> productOptional = productRepository.findById(id);
-        return productOptional.map(Product::getDto).orElse(null);
+        if (productOptional.isEmpty()) {
+            return null;
+        }
+
+        Product product = productOptional.get();
+        ProductDto dto = product.getDto();
+
+        List<Order> deliveredOrders = orderRepository.findByOrderStatus(OrderStatus.DELIVERED);
+        long totalSold = 0L;
+
+        for (Order order : deliveredOrders) {
+            for (CartItems item : order.getCartItems()) {
+                if (item.getProduct().getId().equals(id)) {
+                    totalSold += item.getQuantity();
+                }
+            }
+        }
+        dto.setTotalSold(totalSold);
+
+        List<Review> reviews = reviewRepository.findByProductId(id);
+        double averageRating = reviews.stream()
+                .mapToLong(Review::getRating)
+                .average()
+                .orElse(0.0);
+        dto.setAverageRating(averageRating);
+
+        return dto;
     }
 
     @Override

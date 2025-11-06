@@ -3,6 +3,7 @@ package com.E_Commerce.Ecom.entity;
 import com.E_Commerce.Ecom.dto.CartItemsDto;
 import com.E_Commerce.Ecom.dto.OrderDto;
 import com.E_Commerce.Ecom.enums.OrderStatus;
+import com.E_Commerce.Ecom.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -30,7 +31,8 @@ public class Order {
 
     private  String address;
 
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     private String name;
 

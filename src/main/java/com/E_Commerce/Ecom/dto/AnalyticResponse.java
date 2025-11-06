@@ -3,6 +3,8 @@ package com.E_Commerce.Ecom.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class AnalyticResponse {
@@ -20,5 +22,8 @@ public class AnalyticResponse {
     private Long currentMonthEarnings;
 
     private Long previousMonthEarnings;
+
+    private List<ProductStatisticDto> currentMonthProducts;
+    private List<ProductStatisticDto> previousMonthProducts;
 
 }

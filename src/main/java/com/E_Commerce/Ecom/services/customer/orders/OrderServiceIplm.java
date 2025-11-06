@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,8 +26,22 @@ public class OrderServiceIplm implements OrderService {
         return activeOrder.stream().map(Order::getOrderDto).collect(Collectors.toList());
     }
 
+    @Override
     public OrderDto searchOrderByTrackingId(UUID trackingId) {
         Optional<Order> optionalOrder = orderRepository.findOrderByTrackingId(trackingId);
         return optionalOrder.map(Order::getOrderDto).orElse(null);
+    }
+    @Override
+    public OrderDto changeOrderStatus(Long id, String status) {
+        Optional<Order> optionalOrder = orderRepository.findById(id);
+        if(optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            if(Objects.equals(status, "Cancelled")) {
+                order.setOrderStatus(OrderStatus.CANCELLED);
+            }
+
+            return orderRepository.save(order).getOrderDto();
+        }
+        return null;
     }
 }
