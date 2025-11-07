@@ -25,6 +25,10 @@ public class Product {
 
     private Long price;
 
+    private String origin;
+
+    private Long stockQuantity;
+
     @Lob
     private String description;
 
@@ -34,6 +38,10 @@ public class Product {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -49,6 +57,15 @@ public class Product {
         productDto.setName(name);
         productDto.setPrice(price);
         productDto.setDescription(description);
+        productDto.setOrigin(origin);
+        productDto.setStockQuantity(stockQuantity);
+        if(this.brand != null){
+            productDto.setBrandId(this.brand.getId());
+            productDto.setBrandName(this.brand.getName());
+        } else {
+            productDto.setBrandId(null);
+            productDto.setBrandName(null);
+        }
         List<byte[]> allImages = images.stream()
                         .map(ProductImages::getImg)
                         .toList();

@@ -78,4 +78,10 @@ public class CustomerProductIplm implements CustomerProduct {
         List<Product> products = productRepository.findByCategoryId(categoryId);
         return products.stream().map(Product::getDto).collect(Collectors.toList());
     }
+
+    @Override
+    public List<ProductDto> getProductByCategoryIdAndBrandId(Long categoryId, Long brandId){
+        List<Product> products = productRepository.findByCategoryIdAndBrandId(categoryId, brandId);
+        return products.stream().map(Product::getDto).collect(Collectors.toList());
+    }
 }

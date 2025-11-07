@@ -13,4 +13,6 @@ public interface CustomerProduct {
     ProductDto getProductById(Long id);
 
     List<ProductDto> getProductsByCategoryId(Long categoryId);
+
+    List<ProductDto> getProductByCategoryIdAndBrandId(Long categoryId, Long brandId);
 }

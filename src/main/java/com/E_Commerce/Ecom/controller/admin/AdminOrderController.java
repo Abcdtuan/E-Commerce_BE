@@ -40,6 +40,7 @@ public class AdminOrderController {
 
     @GetMapping("/analytics/products")
     public ResponseEntity<List<ProductStatisticDto>> getProductStatistics(
+
             @RequestParam int month,
             @RequestParam int year
     ){

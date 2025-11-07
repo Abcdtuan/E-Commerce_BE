@@ -21,7 +21,7 @@ public class OrderServiceIplm implements OrderService {
 
     @Override
     public List<OrderDto> getAllOrders(Long userId) {
-        List<OrderStatus> statuses = List.of(OrderStatus.PLACED, OrderStatus.SHIPPED, OrderStatus.DELIVERED);
+        List<OrderStatus> statuses = List.of(OrderStatus.PLACED, OrderStatus.SHIPPED, OrderStatus.DELIVERED, OrderStatus.CANCELLED);
         List<Order> activeOrder = orderRepository.findByUserIdAndOrderStatusIn(userId, statuses);
         return activeOrder.stream().map(Order::getOrderDto).collect(Collectors.toList());
     }
@@ -37,7 +37,13 @@ public class OrderServiceIplm implements OrderService {
         if(optionalOrder.isPresent()) {
             Order order = optionalOrder.get();
             if(Objects.equals(status, "Cancelled")) {
-                order.setOrderStatus(OrderStatus.CANCELLED);
+                if (order.getOrderStatus() == OrderStatus.PLACED) {
+                    order.setOrderStatus(OrderStatus.CANCELLED);
+                } else {
+
+                    throw new IllegalStateException("Chỉ có thể hủy đơn hàng khi đang ở trạng thái 'PLACED'.");
+                }
+
             }
 
             return orderRepository.save(order).getOrderDto();

@@ -35,6 +35,16 @@ public class ProductDto {
 
     private Double averageRating;
 
+    private Long brandId;
+
+    private String brandName;
+
+    private String origin;
+
+    private Long stockQuantity;
+
+
+
 
 
 

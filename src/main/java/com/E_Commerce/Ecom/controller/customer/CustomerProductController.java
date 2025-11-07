@@ -47,4 +47,10 @@ public class CustomerProductController {
         List<ProductDto> productDtos = customerProduct.getProductsByCategoryId(categoryId);
         return  ResponseEntity.status(HttpStatus.OK).body(productDtos);
     }
+
+    @GetMapping("/filter/{categoryId}/{brandId}")
+    public ResponseEntity<List<ProductDto>> getAllProductsByCategoryIdAndBrandId(@PathVariable Long categoryId, @PathVariable Long brandId) {
+        List<ProductDto> productDtos = customerProduct.getProductByCategoryIdAndBrandId(categoryId, brandId);
+        return  ResponseEntity.status(HttpStatus.OK).body(productDtos);
+    }
 }

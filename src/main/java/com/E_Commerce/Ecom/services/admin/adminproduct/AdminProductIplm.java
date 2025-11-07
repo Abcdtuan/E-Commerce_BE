@@ -1,9 +1,11 @@
 package com.E_Commerce.Ecom.services.admin.adminproduct;
 
 import com.E_Commerce.Ecom.dto.ProductDto;
+import com.E_Commerce.Ecom.entity.Brand;
 import com.E_Commerce.Ecom.entity.Category;
 import com.E_Commerce.Ecom.entity.Product;
 import com.E_Commerce.Ecom.entity.ProductImages;
+import com.E_Commerce.Ecom.repository.BrandRepository;
 import com.E_Commerce.Ecom.repository.CategoryRepository;
 import com.E_Commerce.Ecom.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +29,18 @@ public class AdminProductIplm implements AdminProduct {
 
     private final CategoryRepository categoryRepository;
 
+    private final BrandRepository brandRepository;
+
     public ProductDto addProduct(ProductDto productDto) throws IOException {
         Product product = new Product();
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
+        product.setOrigin(productDto.getOrigin());
+        product.setStockQuantity(productDto.getStockQuantity());
+        Brand brand = brandRepository.findById(productDto.getBrandId()).get();
+        product.setBrand(brand);
         Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow();
-
         product.setCategory(category);
         addImagesToProduct(product, productDto.getImages());
         Product savedProduct = productRepository.save(product);
@@ -80,12 +87,18 @@ public class AdminProductIplm implements AdminProduct {
     public ProductDto updateProduct(Long id, ProductDto productDto) throws IOException {
         Optional<Product> optionalProduct = productRepository.findById(id);
         Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
+        Optional<Brand> optionalBrand = productDto.getBrandId() != null
+                ? brandRepository.findById(productDto.getBrandId())
+                : Optional.empty();
         if(optionalProduct.isPresent() && optionalCategory.isPresent()){
             Product product = optionalProduct.get();
             product.setName(productDto.getName());
             product.setDescription(productDto.getDescription());
             product.setPrice(productDto.getPrice());
             product.setCategory(optionalCategory.get());
+            product.setOrigin(productDto.getOrigin());
+            product.setStockQuantity(productDto.getStockQuantity());
+            product.setBrand(optionalBrand.orElse(null));
             addImagesToProduct(product, productDto.getImages());
 
             Product savedProduct = productRepository.save(product);
