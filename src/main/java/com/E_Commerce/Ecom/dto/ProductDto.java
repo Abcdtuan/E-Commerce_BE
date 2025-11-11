@@ -43,6 +43,8 @@ public class ProductDto {
 
     private Long stockQuantity;
 
+    private Long remainingStock;
+
 
 
 

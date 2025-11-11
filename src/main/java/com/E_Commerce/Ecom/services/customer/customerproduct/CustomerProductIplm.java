@@ -63,12 +63,31 @@ public class CustomerProductIplm implements CustomerProduct {
         }
         dto.setTotalSold(totalSold);
 
+        List<OrderStatus> subtractStatuses = List.of(
+                OrderStatus.PLACED,
+                OrderStatus.SHIPPED,
+                OrderStatus.DELIVERED
+        );
+
+        List<Order> activeOrders = orderRepository.findAllByOrderStatusIn(subtractStatuses);
+
+        long totalReserved = activeOrders.stream()
+                .flatMap(order -> order.getCartItems().stream())
+                .filter(item -> item.getProduct().getId().equals(id))
+                .mapToLong(CartItems::getQuantity)
+                .sum();
+
+        long remainingStock = product.getStockQuantity() - totalReserved;
+        if (remainingStock < 0) remainingStock = 0;
+
+        dto.setRemainingStock(remainingStock);
+
+
         List<Review> reviews = reviewRepository.findByProductId(id);
         double averageRating = reviews.stream()
                 .mapToLong(Review::getRating)
                 .average()
                 .orElse(0.0);
-        dto.setAverageRating(averageRating);
 
         return dto;
     }

@@ -26,7 +26,10 @@ public class CartServiceIplm implements CartService {
     private final UserRepository userRepository;
 
     private final ProductRepository productRepository;
+
     private final CouponRepository couponRepository;
+
+    private final PaymentRepository paymentRepository;
 
 
     @Override
@@ -222,8 +225,11 @@ public class CartServiceIplm implements CartService {
             activeOrder.setTrackingId(UUID.randomUUID());
             activeOrder.setPaymentMethod(placeOrderDto.getPaymentMethod());
             activeOrder.setOrderStatus(OrderStatus.PLACED);
-
             orderRepository.save(activeOrder);
+
+            Payment payment = new Payment();
+            payment.setOrder(activeOrder);
+            paymentRepository.save(payment);
 
             Order order = new Order();
             order.setAmount(0L);
@@ -232,7 +238,6 @@ public class CartServiceIplm implements CartService {
             order.setUser(optionalUser.get());
             order.setOrderStatus(OrderStatus.PENDING);
             orderRepository.save(order);
-
             return activeOrder.getOrderDto();
 
 
